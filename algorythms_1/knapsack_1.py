@@ -7,7 +7,7 @@ import numpy as np
 # For example, the third line of the file is "50074 659", indicating that the second item has value 50074 and size 659, respectively.
 # You can assume that all numbers are positive. You should assume that item weights and the knapsack capacity are integers.
 
-# The file implements simple knapsack solution and returns optimal value for the given input file 
+# The file implements knapsack solution when the input is so big that we don't want to store everything at once 
 
 class Item:
 	def __init__(self, ID = 0, Value=0, Weight=0):
@@ -58,8 +58,10 @@ class Knapsack:
 			
 			i = i+1
 			
-		self.filling = np.zeros( (len(self.Items)+1,self.capacity+1 ) )	
-		#self.filling = np.zeros( (2,self.capacity+1 ) )	
+		#just current and previous rows to store	
+		self.filling = np.zeros( (2,self.capacity+1 ) )	
+		print("TABLE OK")
+		
 		
 	def itemById(self, ID):
 		if ID not in [item.id for item in self.Items]: return None
@@ -67,19 +69,25 @@ class Knapsack:
 		
 	
 	def optimalPack(self):
-		for (i,x) , intermediate in np.ndenumerate (self.filling):
-			if i == 0: continue
-			currItem = self.itemById(i)
-			
-			if not currItem: return -1
-			
-			currValue = currItem.value
-			currWeight = currItem.weight
-			
-			if (x-currWeight < 0) : self.filling[i][x] = self.filling[i-1][x]
-			else: self.filling[i][x] =  max(self.filling[i-1][x] , (self.filling[i-1][x-currWeight]+currValue))
-			
+		for i in [item.id for item in self.Items]:
+			for x in range(0, self.capacity + 1): 
+				#if i == 0: continue
+				
+				currItem = self.itemById(i)
+				
+				if not currItem: return -1
+				
+				currValue = currItem.value
+				currWeight = currItem.weight
+				
+				if (x-currWeight < 0) : self.filling[1][x] = self.filling[0][x]
+				else: self.filling[1][x] =  max(self.filling[0][x] , (self.filling[0][x-currWeight]+currValue))
+				#print("X="+ str(x))
 			#print ("ITER: i = "+str(i)+"x = "+str(x)+ " value = "+str(intermediate))
+			self.filling[0][:]=self.filling[1][:]
+		#now that ith row is computed, the (i-1)th can be discarded
+			print("on item #"+ str(i))
+		
 		print(self.filling)	
 		
 s1 = Knapsack()
