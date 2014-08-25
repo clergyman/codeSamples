@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+	div.inView {
+		width: 486px;
+		height : 365px;
+		padding: 10px;
+		border: 5px solid gray;
+		margin: 0px; 
+	}
+	
+	div.oakInfo {
+		height : 300px;
+		padding: 10px;
+		border: 5px;
+		margin: 0px;
+	}
+</style>	
+</head>
+<body>
+
+<div class="inView" ></div>
+<div class="oakInfo">Oakenfy! For no particular reason</div>
+<div class="inView" id="2nd"></div>
+<div class="oakInfo">Have tried everything? Try oaks for a change</div>
+<div class="inView"></div>
+<div class="oakInfo">Oaks know what to do</div>
+
+<script type="text/javascript">
+    function VisibilityMonitor(elements, showfn, hidefn) {
+        var isshown= new Array(elements.length);
+		    for (var i = 0; i<elements.length; i++) {
+				isshown[i] = false
+			};
+		
+        function check() {
+            for (var i = 0; i<elements.length; i++) {
+				if (rectsIntersect(getPageRect(), getElementRect(elements[i])) !== isshown[i]) {
+					isshown[i]= !isshown[i];
+					isshown[i]? showfn(elements[i]) : hidefn(elements[i]);
+				}
+				console.log('isshouwn: '+isshown[i])
+			};
+        };
+        window.onscroll=window.onresize= check;
+        check();
+    }
+
+    function getPageRect() {
+        var m = document.compatMode == 'CSS1Compat';
+        var x = window.pageXOffset || (m ? document.documentElement.scrollLeft : document.body.scrollLeft);
+        var y = window.pageYOffset || (m ? document.documentElement.scrollTop : document.body.scrollTop);
+        var w = window.innerWidth || (m ? document.documentElement.clientWidth : document.body.clientWidth);
+        var h = window.innerHeight || (m ? document.documentElement.clientHeight : document.body.clientHeight);
+        return [x, y, x+w, y+h];
+    }
+
+    function getElementRect(element) {
+        var x= 0, y= 0;
+        var w= element.offsetWidth, h= element.offsetHeight;
+        while (element.offsetParent!==null) {
+            x+= element.offsetLeft;
+            y+= element.offsetTop;
+            element= element.offsetParent;
+        }
+        return [x, y, x+w, y+h];
+    }
+
+    function rectsIntersect(a, b) {
+        console.log(a,b)
+		res = a[1]<=b[1] && a[3]>=b[3] //&& a[1]<b[1] && a[3]>b[3];
+		console.log(res)
+		return res
+    }
+
+    VisibilityMonitor(
+        document.getElementsByClassName('inView'),
+        function(elem) {
+            var oakImage = document.createElement("img");
+            oakImage.src = "resources/oak.jpg";
+			oakImage.class = "incomingOak"
+			elem.appendChild(oakImage)
+			//alert('div in view!');
+        },
+        function(elem) {
+            //alert('div gone away!');
+			var im;
+			var notes = null;
+			for (var i = 0; i < elem.childNodes.length; i++) {
+				if (elem.childNodes[i].class == "incomingOak") {
+				  im = elem.childNodes[i];
+				  break;
+				}        
+			}
+			
+			if (im) { elem.removeChild(im) }
+			
+        }
+    );
+</script>
+
+</body>
+</html>
